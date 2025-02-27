@@ -11,6 +11,11 @@ class LeetCodeTestCaseApplicationTests {
     Problem problem;
 
     @Test
+    public void test0() {
+        problem.twoSum(null, 0);
+    }
+
+    @Test
     public void test1() {
         problem.zigzagLevelOrder(null);
     }
@@ -22,6 +27,12 @@ class LeetCodeTestCaseApplicationTests {
     @Test
     public void test3() {
         problem.mergeTwoLists(null,null);
+    }
+
+    @Test
+    public void yourTest() {
+        // call your function here, set any param
+
     }
 
 }

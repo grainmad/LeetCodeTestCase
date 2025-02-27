@@ -12,6 +12,30 @@ import java.util.*;
 @Component
 public class Problem {
 
+    // 1. 两数之和
+    @LeetCodeTestCase(
+            type = {DataType.IntArray, DataType.Int},
+            data = {"[2,7,11,15]", "9"},
+            answerType = DataType.IntArray,
+            answer = "[0,1]"
+    )
+    @LeetCodeTestCase(
+            type = {DataType.IntArray, DataType.Int},
+            data = {"[3,2,4]", "6"},
+            answerType = DataType.IntArray,
+            answer = "[1 , 2]"
+    )
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> mp = new HashMap<>();
+        for (int i=0; i<nums.length; i++) {
+            if (mp.containsKey(target-nums[i])) {
+                return new int[]{mp.get(target-nums[i]), i};
+            }
+            mp.put(nums[i], i);
+        }
+        return null;
+    }
+
     // 103. 二叉树的锯齿形层序遍历
     @LeetCodeTestCase(
             type = DataType.TreeNode,
@@ -120,4 +144,5 @@ public class Problem {
         }
         return head.next;
     }
+
 }

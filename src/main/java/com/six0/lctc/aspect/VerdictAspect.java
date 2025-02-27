@@ -22,6 +22,15 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class VerdictAspect {
+    String RESET = "\u001B[0m"; // 重置颜色
+    String RED = "\u001B[31m";   // 红色
+    String GREEN = "\u001B[32m"; // 绿色
+    String BLUE = "\u001B[34m";   // 蓝色
+    String YELLOW = "\u001B[33m"; // 黄色
+
+    private void colorPrint(String msg, String color) {
+        System.out.printf(color+msg+RESET);
+    }
 
     /**
      * 切入点
@@ -36,20 +45,26 @@ public class VerdictAspect {
     public Object logAroundServiceMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        System.out.println("::::: " + signature.getMethod().getName()+" :::::");
+        colorPrint("::::: " + signature.getMethod().getName()+" :::::\n", YELLOW);
         LeetCodeTestCase lctc = signature.getMethod().getAnnotation(LeetCodeTestCase.class);
         LeetCodeTestCases lctcs = signature.getMethod().getAnnotation(LeetCodeTestCases.class);
 //        System.out.println(lctc);
 //        System.out.println(lctcs);
         if (lctc != null) { // single test case
+            colorPrint("Test Case:\n", BLUE);
+            colorPrint(String.join("\n", lctc.data())+"\n", "");
+            colorPrint("User Print:\n", BLUE);
             Object answer = assignParam(lctc, args);
             Object result = joinPoint.proceed(args);
             cmp(answer, result, lctc);
             return result;
         } else if (lctcs != null) { // multi test case
             Object result = null;
+            int cnt = 1;
             for (LeetCodeTestCase i:lctcs.value()) {
-
+                colorPrint("Test Case "+ (cnt++) +":\n", BLUE);
+                colorPrint(String.join("\n", i.data())+"\n", "");
+                colorPrint("User Print:\n", BLUE);
                 Object answer = assignParam(i, args);
                 result = joinPoint.proceed(args);
                 cmp(answer, result, i);
@@ -108,14 +123,20 @@ public class VerdictAspect {
     boolean cmp(Object answer, Object result, LeetCodeTestCase lctc) {
         Object real = noArray(answer, lctc.answerType());
         Object your = noArray(result, lctc.answerType());
-        System.out.println("Your Answer:\n"+your);
-        System.out.println("Real Answer:\n"+real);
-        System.out.println("Verdict:");
+        colorPrint("Real Answer:\n", BLUE);
+        colorPrint(real+"\n", "");
+        colorPrint("Your Answer:\n", BLUE);
+        colorPrint(your+"\n", "");
+        colorPrint("Verdict: ", BLUE);
         if (your == null && real != null || your != null && real == null) {
-            System.out.println("Wrong Answer\n");
+//            System.out.println(RED+"Wrong Answer\n"+RESET);
+            colorPrint("Wrong Answer\n", RED);
             return false;
         } else {
-            System.out.println((your == real || your.equals(real)) ?"Accepted\n":"Wrong Answer\n");
+            if (your == real || your.equals(real))
+                colorPrint("Accepted\n", GREEN);
+            else
+                colorPrint("Wrong Answer\n", GREEN);
             return (your == real || your.equals(real));
         }
     }
